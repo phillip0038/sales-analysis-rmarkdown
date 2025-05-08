@@ -1,0 +1,53 @@
+---
+title: "Sales Analysis Report"
+author: "Philly B"
+date: "2025-05-08"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(readr)
+library(ggplot2)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r load-data}
+sales_data <- read_csv("sales_data.csv", show_col_types = FALSE)
+
+sales_data <- sales_data %>% 
+  mutate(Revenue = Units_Sold * Price)
+```
+
+```{r summary-table}
+revenue_summary <- sales_data %>% 
+  group_by(Product) %>% 
+  summarize(
+    Total_Units = sum(Units_Sold),
+    Total_Revenue = sum(Revenue)
+  )
+
+revenue_summary
+```
+
+```{r revenue-plot, fig.width=7, fig.height=5}
+revenue_plot <- ggplot(revenue_summary, aes(x = Product, y = Total_Revenue, fill = Product)) +
+  geom_col() +
+  geom_text(aes(label = round(Total_Revenue, 0)), vjust = -0.3) +
+  labs(
+    title = "Total Revenue by Product",
+    x = "Product",
+    y = "Total Revenue"
+  ) +
+  theme_minimal() +
+  coord_flip()
+
+revenue_plot
+```
+
+## 🔍 Key Insights
+
+- **iPad** generated the highest revenue overall.
+- **Hoodie** also performed well and is worth continuing to promote.
+- **Mug** and **Pouch** underperformed and may need a discount or bundling strategy.
+
